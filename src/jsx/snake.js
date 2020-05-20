@@ -1,6 +1,9 @@
 function Snake(field) {
   this.field = field
   this.reset()
+
+  this.growMP3 = new Audio('../sound/grow.mp3');
+  this.deadMP3 = new Audio('../sound/dead.mp3');
 }
 
 Snake.prototype = {
@@ -27,8 +30,9 @@ Snake.prototype = {
     this.timer = setInterval(() => this.move(), this.speed)
   },
 
-  stop() {
+  stop(byDeath) {
     clearInterval(this.timer)
+    if (byDeath) this.deadMP3.play()
   },
 
   drawCells: function () {
@@ -46,7 +50,7 @@ Snake.prototype = {
         (...args) => this.canGrow = [...args]
       )
       if (cell.dead) {
-        this.stop()
+        this.stop(true)
         break
       }
     }
@@ -68,6 +72,8 @@ Snake.prototype = {
       this.stop()
       this.run()
     }
+
+    this.growMP3.play()
   },
 
   checkAlive() {  // check death against itself
@@ -78,7 +84,7 @@ Snake.prototype = {
         if (cell.xy !== firstCellXY)
           continue
 
-        this.stop()
+        this.stop(true)
         this.cells[0].dead = true
         this.cells[0].checkAlive()
         break
